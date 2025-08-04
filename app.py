@@ -1,7 +1,22 @@
 import streamlit as st
 import pandas as pd
 from scraper import get_today_race_urls, get_race_data
-
+@st.cache_data(ttl=86400)  # Cache for 24 hours
+def load_all_race_data():
+    urls = get_today_race_urls()
+    all_data = []
+    for url in urls:
+        df = get_race_data(url)
+        if not df.empty:
+            num_runners = len(df)
+            df["Market Prob"] = 1 / df["Exchange Odds"]
+            df["Model Prob"] = 1 / num_runners
+            df["Value Score"] = df["Model Prob"] - df["Market Prob"]
+            all_data.append(df)
+    if all_data:
+        return pd.concat(all_data)
+    else:
+        return pd.DataFrame()
 st.set_page_config(page_title="Horse Value Finder", page_icon="🐎", layout="wide")
 
 st.title("🐎 Horse Value Finder")
