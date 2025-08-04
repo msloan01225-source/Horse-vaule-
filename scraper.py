@@ -54,3 +54,23 @@ def get_race_data(url):
             })
 
     return pd.DataFrame(data)
+
+def get_tomorrow_race_urls():
+    from datetime import datetime, timedelta
+    from bs4 import BeautifulSoup
+    import requests
+
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+    base_url = "https://www.racingpost.com/racecards/"
+    response = requests.get(base_url)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    urls = []
+    for link in soup.find_all("a", href=True):
+        href = link["href"]
+        if tomorrow in href and "/racecards/" in href and "/racecard/" in href:
+            full_url = "https://www.racingpost.com" + href
+            if full_url not in urls:
+                urls.append(full_url)
+
+    return urls
