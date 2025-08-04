@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from scraper import get_today_race_urls, get_race_data
+
 @st.cache_data(ttl=86400)  # Cache for 24 hours
 def load_all_race_data():
     urls = get_today_race_urls()
@@ -47,7 +48,9 @@ if st.button("📊 Scan Today's Races"):
     with st.spinner("Scanning Racing Post..."):
         urls = get_today_race_urls()
         all_data = []
-
+        for url in urls:
+            df = get_race_data(url)
+            
         for url in urls:
             try:
                 df = get_race_data(url)
