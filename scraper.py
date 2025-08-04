@@ -19,7 +19,7 @@ def get_today_race_urls():
 
     return urls
 
-def get_tomorrow_race_urls():
+def ():
     base_url = "https://www.racingpost.com/racecards/"
     tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
     response = requests.get(base_url)
