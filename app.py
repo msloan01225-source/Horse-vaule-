@@ -50,7 +50,7 @@ def load_uk_data(day):
 # Refresh button
 if st.button("🔄 Refresh Data"):
     st.cache_data.clear()
-    st.experimental_rerun()
+    st.rerun()
 
 # Load merged data
 df = load_uk_data(race_day)
