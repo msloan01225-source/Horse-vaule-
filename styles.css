@@ -1,0 +1,14 @@
+/* Table styling */
+thead tr th {
+    background-color: #111827;
+    color: white;
+    font-weight: bold;
+}
+
+tbody tr:nth-child(1) {
+    background-color: gold !important;
+}
+
+tbody tr:hover {
+    background-color: #f3f4f6 !important;
+}
