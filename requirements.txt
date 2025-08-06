@@ -4,3 +4,4 @@ beautifulsoup4
 requests
 pytz
 plotly
+numpy
