@@ -71,26 +71,34 @@ def get_timeform_data(day="Today"):
 
 @st.cache_data(ttl=300)
 def load_data(day):
-    rp = get_racingpost_data(day)
-    tf = get_timeform_data(day)
-    if rp.empty and tf.empty:
+    rp_df = get_racingpost_data(day)
+    tf_df = get_timeform_data(day)
+
+    if rp_df.empty and tf_df.empty:
         return pd.DataFrame()
+
+    # Merge on Race & Horse – fallback to concat if no match
     try:
-        df = pd.merge(rp, tf, on=["Race", "Horse"], how="inner", suffixes=("_RP", "_TF"))
+        df = pd.merge(rp_df, tf_df, on=["Race", "Horse"], how="inner", suffixes=("_RP", "_TF"))
     except Exception:
-        df = pd.concat([rp, tf], ignore_index=True)
+        df = pd.concat([rp_df, tf_df], ignore_index=True)
+
+    # Combine Win_Value and Place_Value if present in both
     if "Win_Value_RP" in df.columns and "Win_Value_TF" in df.columns:
         df["Win_Value"] = df[["Win_Value_RP", "Win_Value_TF"]].mean(axis=1)
-    elif "Win_Value" not in df.columns:
-        df["Win_Value"] = 0.0
+    else:
+        df["Win_Value"] = df.get("Win_Value", 0.0)
+
     if "Place_Value_RP" in df.columns and "Place_Value_TF" in df.columns:
         df["Place_Value"] = df[["Place_Value_RP", "Place_Value_TF"]].mean(axis=1)
-    elif "Place_Value" not in df.columns:
-        df["Place_Value"] = 0.0
-    # Placeholder "Best Odds" and probabilities
+    else:
+        df["Place_Value"] = df.get("Place_Value", 0.0)
+
+    # Add simulated Best Odds + predictions (placeholder until bookmaker scraping added)
     df["Best Odds"] = np.random.uniform(2, 6, len(df)).round(2)
     df["Predicted Win %"] = (1 / df["Best Odds"] * 100).round(1)
     df["Predicted Place %"] = (df["Predicted Win %"] * 0.6).round(1)
+
     return df
 
 # --------- UI ---------
