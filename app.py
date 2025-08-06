@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from timeform_scraper import get_timeform_data
+from timeform_sc
 import numpy as np
 
 st.set_page_config(page_title="BetEdge Value Finder", layout="wide")
