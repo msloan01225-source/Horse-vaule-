@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from racingpost_scraper import get_racingpost_data
+
 from timeform_scraper import get_timeform_data
 import numpy as np
 
