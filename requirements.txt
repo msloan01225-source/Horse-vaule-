@@ -6,3 +6,4 @@ pytz
 plotly
 numpy
 matplotlib
+streamlit-option-menu
