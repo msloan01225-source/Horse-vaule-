@@ -7,3 +7,4 @@ plotly
 numpy
 matplotlib
 streamlit-option-menu
+altair
