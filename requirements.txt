@@ -8,4 +8,3 @@ numpy
 matplotlib
 streamlit-option-menu
 altair
-pip install streamlit-option-menu
