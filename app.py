@@ -4,6 +4,27 @@ import numpy as np
 from datetime import datetime
 from streamlit_option_menu import option_menu
 
+import joblib
+import streamlit as st
+import pandas as pd
+import numpy as np
+
+# 1) Load the trained EdgeBrain model
+@st.cache_resource
+def load_edgebrain_model():
+    return joblib.load("edgebrain_model.pkl")
+edge_model = load_edgebrain_model()
+
+# … once you have your live/mocked DataFrame `df_live` with Odds, Win_Value, Place_Value …
+
+# 2) Score with EdgeBrain
+X_edge = df_live[["Odds","Win_Value","Place_Value"]]
+df_live["EdgeBrain Win %"] = (edge_model.predict_proba(X_edge)[:,1] * 100).round(1)
+
+# 3) Display in Streamlit
+st.subheader("🧠 EdgeBrain Win % Rankings")
+st.dataframe(df_live.sort_values("EdgeBrain Win %", ascending=False))
+
 st.set_page_config(
     page_title="EdgeBet – Phase 3",
     layout="wide",
