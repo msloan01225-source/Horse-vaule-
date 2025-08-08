@@ -153,7 +153,7 @@ else:
     st.title("ℹ️ How EdgeBet Works")
     st.markdown
 - Scrape live SP odds from Racing Post  
-- Compute real-time “BetEdge” value metrics  
+- Compute real-time “BetEdge” value metrics in real-time
 - Run the **EdgeBrain** ML model for smarter picks  
 - Filter, chart and table your best selections
     """)
