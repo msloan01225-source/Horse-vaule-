@@ -151,7 +151,7 @@ elif page == "EdgeBrain":
 
 else:
     st.title("ℹ️ How EdgeBet Works")
-    st.markdown("""
+    st.markdown
 - Scrape live SP odds from Racing Post  
 - Compute real-time “BetEdge” value metrics  
 - Run the **EdgeBrain** ML model for smarter picks  
