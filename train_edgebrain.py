@@ -34,3 +34,39 @@ model.fit(X_train, y_train)
 # Save the model
 joblib.dump(model, "edgebrain_model.pkl")
 print("Model saved to edgebrain_model.pkl")
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+import pickle
+
+# 1. Load your historical data
+hist = pd.read_csv("historical.csv")
+
+# 2. Binarize the target: 1 if Win, else 0
+hist['Outcome_bin'] = (hist['Outcome'].str.lower() == 'win').astype(int)
+
+# 3. Select features you already have in the app
+features = ['Odds', 'Win_Value', 'Place_Value']
+X = hist[features]
+y = hist['Outcome_bin']
+
+# 4. Train/test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 5. Fit logistic regression
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# 6. Evaluate on hold-out set
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+# 7. Save the trained model to disk
+with open("edgebrain_model.pkl", "wb") as f:
+    pickle.dump(model, f)
+print("✔️  edgebrain_model.pkl saved")
