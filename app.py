@@ -3,7 +3,90 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from streamlit_option_menu import option_menu
+import streamlit as st
+import pandas as pd
+import numpy as np
+import requests
+from requests.auth import HTTPBasicAuth
+from datetime import datetime, timedelta
+from streamlit_option_menu import option_menu
 
+# ——— Auth & Config ———
+USERNAME, PASSWORD = "…", "…"
+st.set_page_config(page_title="EdgeBet", layout="wide")
+
+# ——— Fetch Live ———
+@st.cache_data(ttl=300)
+def fetch_live_data(day="today"):
+    d = datetime.utcnow().date() + (timedelta(days=1) if day=="tomorrow" else timedelta())
+    url = "https://api.theracingapi.com/v1/racecards"
+    params = {"date": d.isoformat(), "region": "GB"}  # adjust per API
+    r = requests.get(url, auth=HTTPBasicAuth(USERNAME,PASSWORD), params=params, timeout=10)
+    r.raise_for_status(); return r.json()
+
+def live_to_df(raw):
+    rows=[]
+    for m in raw.get("meetings",[]):
+        c = m["course"]["name"]
+        for race in m["races"]:
+            t = race["off"][:5]
+            for rnr in race["runners"]:
+                odds = float(rnr.get("sp_dec",np.nan))
+                if np.isnan(odds): continue
+                val  = max((1/odds*100) - rnr.get("implied_prob",0)*100,0)
+                rows.append({"Horse":rnr["horse"],"Course":c,"Time":t,
+                             "Odds":odds,"Win_Value":val,"Place_Value":val*0.6})
+    df = pd.DataFrame(rows)
+    df["Pred Win %"] = (1/df["Odds"]*100).round(1)
+    df["Pred Place %"] = (df["Pred Win %"]*0.6).round(1)
+    df["BetEdge Win %"] = ((df["Pred Win %"]*0.6)+(df["Win_Value"]*0.4)).round(1)
+    df["BetEdge Place %"] = ((df["Pred Place %"]*0.6)+(df["Place_Value"]*0.4)).round(1)
+    return df
+
+# ——— Load History ———
+@st.cache_data(ttl=600)
+def load_history(): return pd.read_csv("historical.csv")
+hist = load_history()
+total_stake  = hist["Stake"].sum()
+total_return = hist["Return"].sum()
+profit       = total_return - total_stake
+roi          = (profit/total_stake*100).round(1)
+strike_rate  = (hist["Result"]=="Win").mean()*100
+
+# ——— Build UI ———
+with st.sidebar:
+    tab = option_menu("Main Menu",
+          ["Overview","Horse Racing","Performance","EdgeBrain","How It Works"],
+          icons=["house","activity","bar-chart","robot","book"], default_index=0)
+
+if tab=="Overview":
+    st.title("Welcome to EdgeBet")
+    st.metric("Total Runners", len(live_to_df(fetch_live_data())))
+    st.metric("Top Value %", f"{live_to_df(fetch_live_data())['BetEdge Win %'].max():.1f}%")
+
+elif tab=="Horse Racing":
+    df = live_to_df(fetch_live_data())
+    # … your existing filters & charts …
+
+elif tab=="Performance":
+    st.title("Back-Test Performance")
+    st.metric("Stake",  f"£{total_stake:,.0f}")
+    st.metric("Return", f"£{total_return:,.0f}")
+    st.metric("Profit", f"£{profit:,.0f}")
+    st.metric("ROI",    f"{roi}%")
+    st.metric("Strike Rate", f"{strike_rate:.1f}%")
+    st.dataframe(hist, use_container_width=True)
+
+elif tab=="EdgeBrain":
+    df = live_to_df(fetch_live_data())
+    st.title("EdgeBrain Predictions")
+    st.dataframe(df[["Horse","Course","BetEdge Win %","Risk"]])
+
+elif tab=="How It Works":
+    st.title("How It Works")
+    st.video("https://youtube.com/…")    
+
+st.caption(f"Last updated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
 st.set_page_config(page_title="EdgeBet – Phase 3", layout="wide", initial_sidebar_state="auto")
 
 # ---- DARK THEME STYLING ----
