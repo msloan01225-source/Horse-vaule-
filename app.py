@@ -4,6 +4,55 @@ import numpy as np
 from datetime import datetime
 from streamlit_option_menu import option_menu
 
+# (somewhere near your other imports)
+import io
+
+# … inside your option_menu list …
+with st.sidebar:
+    selected = option_menu(
+        "🏠 Main Menu",
+        ["Overview", "Horse Racing", "Football", "EdgeBrain", "Performance", "How It Works"],
+        icons=['house', 'activity', 'soccer', 'robot', 'bar-chart-line', 'book'],
+        menu_icon="cast", default_index=0
+    )
+
+# … after your other page blocks, add:
+
+elif selected == "Performance":
+    st.title("📈 Historical Performance")
+
+    # allow user to upload their own CSV
+    uploaded = st.file_uploader("Upload your historical.csv", type="csv")
+    if uploaded is None:
+        st.info("Drop in your historical.csv to see ROI, strike rate, P&L, etc.")
+    else:
+        # read in the file
+        hist = pd.read_csv(uploaded)
+
+        # ensure proper dtypes
+        hist["Stake"] = pd.to_numeric(hist["Stake"], errors="coerce").fillna(0)
+        hist["Return"] = pd.to_numeric(hist["Return"], errors="coerce").fillna(0)
+        hist["Outcome"] = hist["Outcome"].astype(str)
+
+        # calculate metrics
+        total_stake   = hist["Stake"].sum()
+        total_return  = hist["Return"].sum()
+        profit        = total_return - total_stake
+        roi           = (profit / total_stake * 100) if total_stake else 0
+        wins          = hist[hist["Outcome"].str.lower() == "win"]
+        strike_rate   = (len(wins) / len(hist) * 100) if len(hist) else 0
+
+        # display KPIs
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Bets",       f"{len(hist)}")
+        col2.metric("Total Stake",      f"£{total_stake:.2f}")
+        col3.metric("Total Profit/Loss","£{profit:.2f}")
+        col4.metric("ROI",              f"{roi:.1f}%")
+        st.metric("Strike Rate", f"{strike_rate:.1f}%")
+
+        # show a breakdown table
+        st.subheader("Historical Bets Sample")
+        st.dataframe(hist.head(20), use_container_width=True)
 st.set_page_config(page_title="EdgeBet – Phase 3", layout="wide", initial_sidebar_state="auto")
 
 # ---- DARK THEME STYLING ----
