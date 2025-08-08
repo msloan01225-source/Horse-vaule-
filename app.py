@@ -186,4 +186,4 @@ st.caption(f"Last updated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")``
 - Kept your four tabs exactly as before, with identical UI
 - Added `EdgeBrain %` via your trained model (or stub if missing)
 
-Let me know how this runs and if we’re finally seeing live feeds!
+# Let me know how this runs and if we're finally seeing live feeds!
