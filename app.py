@@ -178,7 +178,7 @@ else:
 """)
     st.video("https://www.youtube.com/watch?v=2Xc9gXyf2G4")
 
-st.caption(f"Last updated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")```
+st.caption(f"Last updated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
 
 **What I changed:**
 - **Injected** a random `Bookie` column so your filter never KeyErrors
