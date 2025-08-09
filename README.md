@@ -17,3 +17,18 @@ BetEdge is a racing odds analytics tool that scans UK 🇬🇧, Australia 🇦�
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
+
+# EdgeBet Ultra — Matrix Edition 🟩
+
+All-in-one **horse racing value & analysis** app with a neon “code editor” theme,
+power de‑vig fair pricing, EdgeBrain microstructure signals, each‑way EV, dutching,
+alerts, ladder inspector, and a slick UI.
+
+## Quickstart
+
+### Local
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# Set secrets: create ~/.streamlit/secrets.toml or export env vars
+streamlit run app/edgebet_app.py
