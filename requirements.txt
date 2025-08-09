@@ -9,3 +9,4 @@ matplotlib
 streamlit-option-menu
 altair
 joblib
+plotly>=5.20
