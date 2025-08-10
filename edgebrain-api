@@ -1,9 +1,0 @@
-edgebrain-api/
-├─ app.py                 # ✅ the full FastAPI backend I sent
-├─ requirements.txt       # ✅ deps
-├─ Dockerfile             # ✅ container build
-├─ config.json            # ✅ live weights/alerts/ui (editable)
-├─ .env.example           # ✅ sample env vars (copy to .env)
-├─ .env                   # 🔒 your real secrets (do not commit)
-├─ fly.toml               # (if using Fly.io)
-└─ service.json           # (if using Railway)
